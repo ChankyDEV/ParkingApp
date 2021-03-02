@@ -1,45 +1,71 @@
+import 'dart:collection';
+
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:parking_app/models/location.dart';
+import 'package:parking_app/models/parking_place.dart';
+import 'package:parking_app/repositories/location/i_location.dart';
+import 'package:parking_app/repositories/location/location_repository.dart';
 
 part 'location_state.dart';
 part 'location_cubit.freezed.dart';
 
 class LocationCubit extends Cubit<LocationState> {
-  LocationCubit() : super(LocationState.initial());
+  LocationCubit(this.locationRepository) : super(LocationState.initial());
+
+  final ILocation locationRepository;
+  Location userLocation;
 
   Future<void> getLocation() async {
-    LocationPermission permission;
+    Position result;
+    try {
+      result = await locationRepository.getActualPosition();
+    } catch (e) {
+      print(e.toString());
+    }
 
-    bool isGPSenabled = await Geolocator.isLocationServiceEnabled();
+    userLocation = Location(result.latitude, result.longitude);
+    var parkings = await getNearbyParkings();
 
-    if (isGPSenabled) {
-      permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.deniedForever) {
-        return Future.error(
-            'Location permissions are permantly denied, we cannot request permissions.');
-      }
+    emit(state.copyWith(
+        position: Position(
+          latitude: result.latitude,
+          longitude: result.longitude,
+        ),
+        markers: convertParkingPlacesToMarkers(parkings),
+        parkings: parkings));
+  }
 
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission != LocationPermission.whileInUse &&
-            permission != LocationPermission.always) {
-          return Future.error(
-              'Location permissions are denied (actual value: $permission).');
-        }
-      }
-      Position result;
-      try {
-        result = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high,
-            forceAndroidLocationManager: true);
-      } catch (e) {
-        print(e.toString());
-      }
+  Future<List<ParkingPlace>> getNearbyParkings() async {
+    List<ParkingPlace> places;
+    try {
+      places = await locationRepository.getNearbyParkings(userLocation);
+    } catch (e) {
+      print(e.toString());
+    }
 
-      emit(state.copyWith(
-          position: Position(
-              latitude: result.latitude, longitude: result.longitude)));
-    } else {}
+    return places;
+  }
+
+  Set<Marker> convertParkingPlacesToMarkers(List<ParkingPlace> places) {
+    Set<Marker> markers = HashSet<Marker>();
+
+    places.forEach((parking) {
+      markers.add(
+        Marker(
+          markerId: MarkerId(parking.name),
+          draggable: false,
+          onTap: () {
+            emit(state.copyWith(chosenParking: parking));
+          },
+          position: LatLng(
+              parking.geometry.location.lat, parking.geometry.location.lng),
+          infoWindow: InfoWindow(title: parking.name),
+        ),
+      );
+    });
+    return markers;
   }
 }

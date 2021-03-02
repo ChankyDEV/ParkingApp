@@ -7,43 +7,51 @@ import 'package:parking_app/cubits/location/location_cubit.dart';
 @immutable
 class HomeScreen extends StatelessWidget {
   Position _position;
+  Set<Marker> _markers;
 
   @override
   Widget build(BuildContext context) {
+    double _height = MediaQuery.of(context).size.height / 1.6;
+    double _width = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.transparent,
-        title: Text(
-          'Find your favourite parking place',
-          style: const TextStyle(
-              color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w500),
-        ),
-      ),
-      body: Stack(
-        children: [
-          BlocBuilder<LocationCubit, LocationState>(
-            builder: (context, state) {
-              if (state.position != null) {
-                _position = state.position;
-                return GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    bearing: 0.0,
-                    target: LatLng(_position.latitude, _position.longitude),
-                    tilt: 59.0,
-                    zoom: 13,
+      body: SafeArea(
+        child: BlocBuilder<LocationCubit, LocationState>(
+          builder: (context, state) {
+            if (state.position != null && state.markers != null) {
+              _position = state.position;
+              return Column(
+                children: [
+                  Container(
+                    height: _height,
+                    width: _width,
+                    child: GoogleMap(
+                      markers: state.markers,
+                      myLocationEnabled: true,
+                      myLocationButtonEnabled: true,
+                      initialCameraPosition: CameraPosition(
+                        bearing: 0.0,
+                        target: LatLng(_position.latitude, _position.longitude),
+                        tilt: 0.0,
+                        zoom: 13,
+                      ),
+                    ),
                   ),
-                  myLocationButtonEnabled: true,
-                  myLocationEnabled: true,
-                );
-              } else {
-                return Center(
-                  child: LoadingScreen(),
-                );
-              }
-            },
-          ),
-        ],
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text(state.chosenParking == null
+                      ? ''
+                      : state.chosenParking.name),
+                ],
+              );
+            } else {
+              return Center(
+                child: LoadingScreen(),
+              );
+            }
+          },
+        ),
       ),
     );
   }

@@ -1,40 +1,42 @@
+import 'dart:convert';
+
+import 'package:parking_app/models/geometry.dart';
+import 'package:parking_app/models/location.dart';
+
 class ParkingPlace {
-  final double latitude;
-  final double longitude;
+  final Location location;
+  final Geometry geometry;
   final String name;
   final String description;
-  final int ranking;
+  final double ranking;
 
   ParkingPlace(
-      {this.latitude,
-      this.longitude,
-      this.name,
-      this.description,
-      this.ranking});
+      this.location, this.geometry, this.name, this.description, this.ranking);
 
-  @override
-  String toString() {
-    return 'ParkingPlace(latitude: $latitude, longitude: $longitude, name: $name, description: $description, ranking: $ranking)';
+  Map<String, dynamic> toMap() {
+    return {
+      'location': location?.toMap(),
+      'geometry': geometry?.toMap(),
+      'name': name,
+      'description': description,
+      'ranking': ranking,
+    };
   }
 
-  @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  factory ParkingPlace.fromMap(Map<dynamic, dynamic> map) {
+    if (map == null) return null;
 
-    return o is ParkingPlace &&
-        o.latitude == latitude &&
-        o.longitude == longitude &&
-        o.name == name &&
-        o.description == description &&
-        o.ranking == ranking;
+    return ParkingPlace(
+      Location.fromMap(map['location']),
+      Geometry.fromMap(map['geometry']),
+      map['name'],
+      map['description'],
+      map['ranking'],
+    );
   }
 
-  @override
-  int get hashCode {
-    return latitude.hashCode ^
-        longitude.hashCode ^
-        name.hashCode ^
-        description.hashCode ^
-        ranking.hashCode;
-  }
+  String toJson() => json.encode(toMap());
+
+  factory ParkingPlace.fromJson(String source) =>
+      ParkingPlace.fromMap(json.decode(source));
 }
