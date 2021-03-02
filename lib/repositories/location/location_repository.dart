@@ -48,8 +48,11 @@ class LocationRepository implements ILocation {
     var json = convert.jsonDecode(response.body);
     var results = json['results'] as List;
 
-    var places =
-        results.map((parking) => ParkingPlace.fromMap(parking)).toList();
+    var places = results
+        .map(
+          (parking) => ParkingPlace.fromMap(parking),
+        )
+        .toList();
 
     return places;
   }

@@ -29,16 +29,22 @@ dependencies:
   firebase: ^8.0.0
   firebase_core: ^0.7.0
   flutter_bloc: ^6.1.2
+  flutter_rating_bar: ^3.2.0+1
   freezed: ^0.12.7
   freezed_annotation: null
   geolocator: ^6.2.1
   google_maps_flutter: ^1.2.0
+  hive: ^1.4.4+1
+  hive_flutter: ^0.3.1
+  hive_generator: ^0.8.2
   http: ^0.12.2
+  path_provider: ^1.6.27
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: null
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 # The following section is specific to Flutter.
