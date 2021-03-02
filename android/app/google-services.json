@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "492099663203",
+    "project_id": "simpleparkingapp-b4ad2",
+    "storage_bucket": "simpleparkingapp-b4ad2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:492099663203:android:e499f236f3780fb2c8cf56",
+        "android_client_info": {
+          "package_name": "com.kamil_koczan.parking_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "492099663203-9g1j0phb8k0rfhd9dksqi7nd652o5j81.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPolnqwy75ej4sEGfoTxOUl3aWKPMhNyU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "492099663203-9g1j0phb8k0rfhd9dksqi7nd652o5j81.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
