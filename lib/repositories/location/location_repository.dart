@@ -4,6 +4,8 @@ import 'package:http/http.dart';
 import 'package:parking_app/models/hive_parking_place.dart';
 import 'package:parking_app/models/location.dart';
 import 'package:parking_app/models/parking_place.dart';
+import 'package:parking_app/models/search_result/place.dart';
+import 'package:parking_app/models/search_result/search_result.dart';
 import 'package:parking_app/repositories/location/i_location.dart';
 import 'dart:convert' as convert;
 
@@ -78,5 +80,44 @@ class LocationRepository implements ILocation {
     }
 
     return parkings;
+  }
+
+  @override
+  Future<Place> getSearchedLocation(SearchResult pickedLocation) async {
+    List<String> locationNameList = pickedLocation.description.split(',');
+
+    String city = locationNameList[0];
+
+    var url =
+        "https://maps.googleapis.com/maps/api/geocode/json?address=$city&key=AIzaSyDBBd9PFQPd-VCfjpDU-zxEraXJpkTrH_Y";
+
+    var response = await get(url);
+    var json = convert.jsonDecode(response.body);
+    var results = json['results'] as List;
+
+    if (results != null) {
+      var place = results.map((term) => Place.fromMap(term)).first;
+      return Place(pickedLocation, place.geometry);
+    } else {
+      return null;
+    }
+  }
+
+  @override
+  Future<List<SearchResult>> getSearchedTerms(String query) async {
+    if (query.length > 2) {
+      var url =
+          "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&key=AIzaSyDBBd9PFQPd-VCfjpDU-zxEraXJpkTrH_Y&sessiontoken=1234567890";
+
+      var response = await get(url);
+      var json = convert.jsonDecode(response.body);
+      var results = json['predictions'] as List;
+
+      var terms = results.map((term) => SearchResult.fromMap(term)).toList();
+
+      return terms;
+    }
+
+    return null;
   }
 }

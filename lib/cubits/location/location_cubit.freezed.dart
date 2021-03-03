@@ -19,13 +19,19 @@ class _$LocationStateTearOff {
       Set<Marker> markers,
       List<ParkingPlace> parkings,
       ParkingPlace chosenParking,
-      bool isConfiguringAgain}) {
+      bool isConfiguringAgain,
+      String searchedTerm,
+      List<SearchResult> searches,
+      Place updatedUserLocation}) {
     return _Initial(
       position: position,
       markers: markers,
       parkings: parkings,
       chosenParking: chosenParking,
       isConfiguringAgain: isConfiguringAgain,
+      searchedTerm: searchedTerm,
+      searches: searches,
+      updatedUserLocation: updatedUserLocation,
     );
   }
 }
@@ -41,6 +47,9 @@ mixin _$LocationState {
   List<ParkingPlace> get parkings;
   ParkingPlace get chosenParking;
   bool get isConfiguringAgain;
+  String get searchedTerm;
+  List<SearchResult> get searches;
+  Place get updatedUserLocation;
 
   @optionalTypeArgs
   TResult when<TResult extends Object>({
@@ -50,7 +59,10 @@ mixin _$LocationState {
             Set<Marker> markers,
             List<ParkingPlace> parkings,
             ParkingPlace chosenParking,
-            bool isConfiguringAgain),
+            bool isConfiguringAgain,
+            String searchedTerm,
+            List<SearchResult> searches,
+            Place updatedUserLocation),
   });
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object>({
@@ -59,7 +71,10 @@ mixin _$LocationState {
         Set<Marker> markers,
         List<ParkingPlace> parkings,
         ParkingPlace chosenParking,
-        bool isConfiguringAgain),
+        bool isConfiguringAgain,
+        String searchedTerm,
+        List<SearchResult> searches,
+        Place updatedUserLocation),
     @required TResult orElse(),
   });
   @optionalTypeArgs
@@ -86,7 +101,10 @@ abstract class $LocationStateCopyWith<$Res> {
       Set<Marker> markers,
       List<ParkingPlace> parkings,
       ParkingPlace chosenParking,
-      bool isConfiguringAgain});
+      bool isConfiguringAgain,
+      String searchedTerm,
+      List<SearchResult> searches,
+      Place updatedUserLocation});
 }
 
 /// @nodoc
@@ -105,6 +123,9 @@ class _$LocationStateCopyWithImpl<$Res>
     Object parkings = freezed,
     Object chosenParking = freezed,
     Object isConfiguringAgain = freezed,
+    Object searchedTerm = freezed,
+    Object searches = freezed,
+    Object updatedUserLocation = freezed,
   }) {
     return _then(_value.copyWith(
       position: position == freezed ? _value.position : position as Position,
@@ -118,6 +139,15 @@ class _$LocationStateCopyWithImpl<$Res>
       isConfiguringAgain: isConfiguringAgain == freezed
           ? _value.isConfiguringAgain
           : isConfiguringAgain as bool,
+      searchedTerm: searchedTerm == freezed
+          ? _value.searchedTerm
+          : searchedTerm as String,
+      searches: searches == freezed
+          ? _value.searches
+          : searches as List<SearchResult>,
+      updatedUserLocation: updatedUserLocation == freezed
+          ? _value.updatedUserLocation
+          : updatedUserLocation as Place,
     ));
   }
 }
@@ -132,7 +162,10 @@ abstract class _$InitialCopyWith<$Res> implements $LocationStateCopyWith<$Res> {
       Set<Marker> markers,
       List<ParkingPlace> parkings,
       ParkingPlace chosenParking,
-      bool isConfiguringAgain});
+      bool isConfiguringAgain,
+      String searchedTerm,
+      List<SearchResult> searches,
+      Place updatedUserLocation});
 }
 
 /// @nodoc
@@ -151,6 +184,9 @@ class __$InitialCopyWithImpl<$Res> extends _$LocationStateCopyWithImpl<$Res>
     Object parkings = freezed,
     Object chosenParking = freezed,
     Object isConfiguringAgain = freezed,
+    Object searchedTerm = freezed,
+    Object searches = freezed,
+    Object updatedUserLocation = freezed,
   }) {
     return _then(_Initial(
       position: position == freezed ? _value.position : position as Position,
@@ -164,6 +200,15 @@ class __$InitialCopyWithImpl<$Res> extends _$LocationStateCopyWithImpl<$Res>
       isConfiguringAgain: isConfiguringAgain == freezed
           ? _value.isConfiguringAgain
           : isConfiguringAgain as bool,
+      searchedTerm: searchedTerm == freezed
+          ? _value.searchedTerm
+          : searchedTerm as String,
+      searches: searches == freezed
+          ? _value.searches
+          : searches as List<SearchResult>,
+      updatedUserLocation: updatedUserLocation == freezed
+          ? _value.updatedUserLocation
+          : updatedUserLocation as Place,
     ));
   }
 }
@@ -175,7 +220,10 @@ class _$_Initial implements _Initial {
       this.markers,
       this.parkings,
       this.chosenParking,
-      this.isConfiguringAgain});
+      this.isConfiguringAgain,
+      this.searchedTerm,
+      this.searches,
+      this.updatedUserLocation});
 
   @override
   final Position position;
@@ -187,10 +235,16 @@ class _$_Initial implements _Initial {
   final ParkingPlace chosenParking;
   @override
   final bool isConfiguringAgain;
+  @override
+  final String searchedTerm;
+  @override
+  final List<SearchResult> searches;
+  @override
+  final Place updatedUserLocation;
 
   @override
   String toString() {
-    return 'LocationState.initial(position: $position, markers: $markers, parkings: $parkings, chosenParking: $chosenParking, isConfiguringAgain: $isConfiguringAgain)';
+    return 'LocationState.initial(position: $position, markers: $markers, parkings: $parkings, chosenParking: $chosenParking, isConfiguringAgain: $isConfiguringAgain, searchedTerm: $searchedTerm, searches: $searches, updatedUserLocation: $updatedUserLocation)';
   }
 
   @override
@@ -211,7 +265,16 @@ class _$_Initial implements _Initial {
                     .equals(other.chosenParking, chosenParking)) &&
             (identical(other.isConfiguringAgain, isConfiguringAgain) ||
                 const DeepCollectionEquality()
-                    .equals(other.isConfiguringAgain, isConfiguringAgain)));
+                    .equals(other.isConfiguringAgain, isConfiguringAgain)) &&
+            (identical(other.searchedTerm, searchedTerm) ||
+                const DeepCollectionEquality()
+                    .equals(other.searchedTerm, searchedTerm)) &&
+            (identical(other.searches, searches) ||
+                const DeepCollectionEquality()
+                    .equals(other.searches, searches)) &&
+            (identical(other.updatedUserLocation, updatedUserLocation) ||
+                const DeepCollectionEquality()
+                    .equals(other.updatedUserLocation, updatedUserLocation)));
   }
 
   @override
@@ -221,7 +284,10 @@ class _$_Initial implements _Initial {
       const DeepCollectionEquality().hash(markers) ^
       const DeepCollectionEquality().hash(parkings) ^
       const DeepCollectionEquality().hash(chosenParking) ^
-      const DeepCollectionEquality().hash(isConfiguringAgain);
+      const DeepCollectionEquality().hash(isConfiguringAgain) ^
+      const DeepCollectionEquality().hash(searchedTerm) ^
+      const DeepCollectionEquality().hash(searches) ^
+      const DeepCollectionEquality().hash(updatedUserLocation);
 
   @JsonKey(ignore: true)
   @override
@@ -237,11 +303,14 @@ class _$_Initial implements _Initial {
             Set<Marker> markers,
             List<ParkingPlace> parkings,
             ParkingPlace chosenParking,
-            bool isConfiguringAgain),
+            bool isConfiguringAgain,
+            String searchedTerm,
+            List<SearchResult> searches,
+            Place updatedUserLocation),
   }) {
     assert(initial != null);
-    return initial(
-        position, markers, parkings, chosenParking, isConfiguringAgain);
+    return initial(position, markers, parkings, chosenParking,
+        isConfiguringAgain, searchedTerm, searches, updatedUserLocation);
   }
 
   @override
@@ -252,13 +321,16 @@ class _$_Initial implements _Initial {
         Set<Marker> markers,
         List<ParkingPlace> parkings,
         ParkingPlace chosenParking,
-        bool isConfiguringAgain),
+        bool isConfiguringAgain,
+        String searchedTerm,
+        List<SearchResult> searches,
+        Place updatedUserLocation),
     @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (initial != null) {
-      return initial(
-          position, markers, parkings, chosenParking, isConfiguringAgain);
+      return initial(position, markers, parkings, chosenParking,
+          isConfiguringAgain, searchedTerm, searches, updatedUserLocation);
     }
     return orElse();
   }
@@ -292,7 +364,10 @@ abstract class _Initial implements LocationState {
       Set<Marker> markers,
       List<ParkingPlace> parkings,
       ParkingPlace chosenParking,
-      bool isConfiguringAgain}) = _$_Initial;
+      bool isConfiguringAgain,
+      String searchedTerm,
+      List<SearchResult> searches,
+      Place updatedUserLocation}) = _$_Initial;
 
   @override
   Position get position;
@@ -304,6 +379,12 @@ abstract class _Initial implements LocationState {
   ParkingPlace get chosenParking;
   @override
   bool get isConfiguringAgain;
+  @override
+  String get searchedTerm;
+  @override
+  List<SearchResult> get searches;
+  @override
+  Place get updatedUserLocation;
   @override
   @JsonKey(ignore: true)
   _$InitialCopyWith<_Initial> get copyWith;

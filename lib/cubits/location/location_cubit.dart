@@ -9,13 +9,16 @@ import 'package:parking_app/models/geometry.dart';
 import 'package:parking_app/models/hive_parking_place.dart';
 import 'package:parking_app/models/location.dart';
 import 'package:parking_app/models/parking_place.dart';
+import 'package:parking_app/models/search_result/place.dart';
+import 'package:parking_app/models/search_result/search_result.dart';
 import 'package:parking_app/repositories/location/i_location.dart';
 
 part 'location_state.dart';
 part 'location_cubit.freezed.dart';
 
 class LocationCubit extends Cubit<LocationState> {
-  LocationCubit(this.locationRepository) : super(LocationState.initial());
+  LocationCubit(this.locationRepository)
+      : super(LocationState.initial(searches: List<SearchResult>()));
 
   final ILocation locationRepository;
   Location userLocation;
@@ -139,5 +142,29 @@ class LocationCubit extends Cubit<LocationState> {
   void saveParking(ParkingPlace parking) {
     HiveParkingPlace hiveParking = HiveParkingPlace.fromParkingPlace(parking);
     Hive.box('parkings').add(hiveParking);
+  }
+
+  // SEARCHING TERM
+
+  void searchTermChanged(String input) async {
+    List<SearchResult> _searches;
+    try {
+      _searches = await locationRepository.getSearchedTerms(input);
+    } catch (e) {}
+
+    if (_searches != null) {
+      emit(state.copyWith(searchedTerm: input, searches: _searches));
+    }
+  }
+
+  void updateUserLocation(SearchResult input) async {
+    Place newLocation;
+    try {
+      newLocation = await locationRepository.getSearchedLocation(input);
+    } catch (e) {}
+
+    if (newLocation != null) {
+      emit(state.copyWith(updatedUserLocation: newLocation));
+    }
   }
 }
