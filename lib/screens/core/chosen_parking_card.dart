@@ -70,9 +70,11 @@ class ChosenParkingCard extends StatelessWidget {
                           context, '/addParkingPlace',
                           arguments: {'parking': parking});
 
-                      ParkingPlace newParking = result['parking'];
-                      BlocProvider.of<LocationCubit>(context)
-                          .updatePinsWithNewParking(newParking);
+                      if (result != null) {
+                        ParkingPlace newParking = result['parking'];
+                        BlocProvider.of<LocationCubit>(context)
+                            .updatePinsWithNewParking(newParking);
+                      }
                     },
                     child: Text('Save Parking')),
               ],

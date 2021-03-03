@@ -124,14 +124,18 @@ class SaveParkingForm extends StatelessWidget {
                           color: Colors.amberAccent[200],
                         );
                       },
-                      itemSize: 40.0,
+                      itemSize: 35.0,
                       itemCount: 5,
                       direction: Axis.horizontal,
                     ),
                     const SizedBox(
-                      height: 20.0,
+                      height: 15.0,
                     ),
-                    RaisedButton(
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+                      child: FlatButton.icon(
+                        icon: Icon(Icons.save),
+                        label: Text('Save parking'),
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
                             var newParking = ParkingPlace(
@@ -141,14 +145,12 @@ class SaveParkingForm extends StatelessWidget {
                                 state.description,
                                 state.rating);
 
-                            BlocProvider.of<SaveParkingFormCubit>(context)
+                            BlocProvider.of<LocationCubit>(context)
                                 .saveParking(newParking);
                             Navigator.pop(context, {'parking': newParking});
                           }
                         },
-                        child: Text('Save')),
-                    const SizedBox(
-                      height: 20.0,
+                      ),
                     ),
                   ],
                 ),

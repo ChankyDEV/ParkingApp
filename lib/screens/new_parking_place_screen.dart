@@ -16,6 +16,7 @@ class NewParkingPlaceScreen extends StatelessWidget {
     }
 
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         title: Text(
           'Save parking',

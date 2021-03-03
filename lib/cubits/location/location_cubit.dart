@@ -3,8 +3,10 @@ import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hive/hive.dart';
 
 import 'package:parking_app/models/geometry.dart';
+import 'package:parking_app/models/hive_parking_place.dart';
 import 'package:parking_app/models/location.dart';
 import 'package:parking_app/models/parking_place.dart';
 import 'package:parking_app/repositories/location/i_location.dart';
@@ -17,31 +19,6 @@ class LocationCubit extends Cubit<LocationState> {
 
   final ILocation locationRepository;
   Location userLocation;
-
-  Future<void> updatePinsWithNewParking(ParkingPlace parking) async {
-    List<ParkingPlace> _parkings = state.parkings;
-    Set<Marker> _markers = state.markers;
-    Marker oldMarker;
-    _markers.forEach((marker) {
-      if (marker.infoWindow.title == 'New parking location') {
-        oldMarker = marker;
-      }
-    });
-
-    _markers.remove(oldMarker);
-    _markers.add(parkingToMarker(parking));
-    _parkings.add(parking);
-
-    emit(state.copyWith(
-        position: Position(
-          latitude: parking.geometry.location.lat,
-          longitude: parking.geometry.location.lng,
-        ),
-        markers: _markers,
-        parkings: _parkings,
-        chosenParking: null,
-        isConfiguringAgain: true));
-  }
 
   Future<void> configureUserLocationAndLoadParkings(
       bool isConfiguredAgain) async {
@@ -130,5 +107,35 @@ class LocationCubit extends Cubit<LocationState> {
       chosenParking: parking,
       markers: updatedMarkers,
     ));
+  }
+
+  Future<void> updatePinsWithNewParking(ParkingPlace parking) async {
+    List<ParkingPlace> _parkings = state.parkings;
+    Set<Marker> _markers = state.markers;
+    Marker oldMarker;
+    _markers.forEach((marker) {
+      if (marker.infoWindow.title == 'New parking location') {
+        oldMarker = marker;
+      }
+    });
+
+    _markers.remove(oldMarker);
+    _markers.add(parkingToMarker(parking));
+    _parkings.add(parking);
+
+    emit(state.copyWith(
+        position: Position(
+          latitude: parking.geometry.location.lat,
+          longitude: parking.geometry.location.lng,
+        ),
+        markers: _markers,
+        parkings: _parkings,
+        chosenParking: null,
+        isConfiguringAgain: true));
+  }
+
+  void saveParking(ParkingPlace parking) {
+    HiveParkingPlace hiveParking = HiveParkingPlace.fromParkingPlace(parking);
+    Hive.box('parkings').add(hiveParking);
   }
 }
