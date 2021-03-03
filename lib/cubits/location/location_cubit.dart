@@ -29,22 +29,24 @@ class LocationCubit extends Cubit<LocationState> {
       print(e.toString());
     }
 
-    userLocation = Location(result.latitude, result.longitude);
-    var parkings = await getNearbyParkings();
-    try {
-      parkings = await locationRepository.addSavedParkings(parkings);
-    } catch (e) {
-      print(e.toString());
-    }
+    if (result != null) {
+      userLocation = Location(result.latitude, result.longitude);
+      var parkings = await getNearbyParkings();
+      try {
+        parkings = await locationRepository.addSavedParkings(parkings);
+      } catch (e) {
+        print(e.toString());
+      }
 
-    emit(state.copyWith(
-        position: Position(
-          latitude: result.latitude,
-          longitude: result.longitude,
-        ),
-        markers: convertParkingPlacesToMarkers(parkings),
-        parkings: parkings,
-        isConfiguringAgain: false));
+      emit(state.copyWith(
+          position: Position(
+            latitude: result.latitude,
+            longitude: result.longitude,
+          ),
+          markers: convertParkingPlacesToMarkers(parkings),
+          parkings: parkings,
+          isConfiguringAgain: false));
+    }
   }
 
   Future<List<ParkingPlace>> getNearbyParkings() async {
