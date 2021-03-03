@@ -65,7 +65,7 @@ class SaveParkingForm extends StatelessWidget {
                             color: Colors.red, fontWeight: FontWeight.bold),
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value.isEmpty || value == 'New parking location') {
                           return 'Please enter parking name';
                         } else {
                           return null;
@@ -101,7 +101,7 @@ class SaveParkingForm extends StatelessWidget {
                             color: Colors.red, fontWeight: FontWeight.bold),
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value.isEmpty || value == 'New parking location') {
                           return 'Please enter description';
                         } else {
                           return null;
@@ -117,7 +117,7 @@ class SaveParkingForm extends StatelessWidget {
                             .read<SaveParkingFormCubit>()
                             .ratingChanged(value);
                       },
-                      initialRating: 0,
+                      initialRating: 1,
                       itemBuilder: (context, index) {
                         return Icon(
                           Icons.star,
@@ -143,7 +143,7 @@ class SaveParkingForm extends StatelessWidget {
                                 parking.geometry,
                                 state.name,
                                 state.description,
-                                state.rating);
+                                state.rating != null ? state.rating : 1);
 
                             BlocProvider.of<LocationCubit>(context)
                                 .saveParking(newParking);

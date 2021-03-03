@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:parking_app/cubits/location/location_cubit.dart';
 import 'package:parking_app/models/parking_place.dart';
 import 'package:parking_app/screens/core/custom_rating_bar.dart';
@@ -7,7 +8,13 @@ import 'package:parking_app/screens/core/custom_rating_bar.dart';
 class ChosenParkingCard extends StatelessWidget {
   final ParkingPlace parking;
 
-  const ChosenParkingCard({Key key, this.parking}) : super(key: key);
+  bool isNewParking;
+
+  ChosenParkingCard({
+    Key key,
+    this.parking,
+    this.isNewParking = true,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -72,16 +79,28 @@ class ChosenParkingCard extends StatelessWidget {
 
                       if (result != null) {
                         ParkingPlace newParking = result['parking'];
+
                         BlocProvider.of<LocationCubit>(context)
                             .updatePinsWithNewParking(newParking);
                       }
                     },
-                    child: Text('Save Parking')),
+                    child: Text(
+                        isNewPin(parking) ? 'Create parking' : 'Save parking')),
               ],
             )
           ],
         ),
       ),
     );
+  }
+}
+
+bool isNewPin(ParkingPlace parking) {
+  if (parking.name == 'New parking location' &&
+      parking.description ==
+          'Click save parking to create own parking location. It will always be with you.') {
+    return true;
+  } else {
+    return false;
   }
 }

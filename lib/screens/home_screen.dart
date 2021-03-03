@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:parking_app/cubits/location/location_cubit.dart';
-import 'package:parking_app/models/parking_place.dart';
 import 'package:parking_app/models/search_result/place.dart';
 import 'package:parking_app/screens/core/chosen_parking_card.dart';
 import 'package:parking_app/screens/core/loading_screen.dart';
@@ -43,6 +42,7 @@ class HomeScreen extends StatelessWidget {
                       fit: StackFit.expand,
                       children: [
                         GoogleMap(
+                          myLocationEnabled: true,
                           onCameraIdle: () {
                             if (state.isLocationUpdated) {
                               BlocProvider.of<LocationCubit>(context)
@@ -68,29 +68,19 @@ class HomeScreen extends StatelessWidget {
                             zoom: 13,
                           ),
                         ),
-                        Positioned(
-                          bottom: 17,
-                          left: 10,
-                          child: FloatingActionButton(
-                            onPressed: () {
-                              BlocProvider.of<LocationCubit>(context)
-                                  .backToUserLocation();
-                            },
-                            child: Icon(Icons.home),
-                          ),
-                        ),
                         FloatingSearchBar(
                             controller: searchBarController,
                             hint: 'Search...',
                             scrollPadding:
                                 const EdgeInsets.only(top: 16, bottom: 56),
                             transitionDuration:
-                                const Duration(milliseconds: 800),
+                                const Duration(milliseconds: 200),
                             transitionCurve: Curves.easeInOut,
                             physics: const BouncingScrollPhysics(),
-                            axisAlignment: 0.0,
+                            axisAlignment: -0.8,
                             openAxisAlignment: 0.0,
-                            maxWidth: 500,
+                            openMaxWidth: MediaQuery.of(context).size.width,
+                            maxWidth: MediaQuery.of(context).size.width / 1.3,
                             debounceDelay: const Duration(milliseconds: 500),
                             transition: CircularFloatingSearchBarTransition(),
                             onQueryChanged: (query) {
@@ -155,12 +145,5 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void cameraMove(List<ParkingPlace> parkings) async {
-    var controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newLatLng(LatLng(
-        parkings.last.geometry.location.lat,
-        parkings.last.geometry.location.lng)));
   }
 }

@@ -4,7 +4,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hive/hive.dart';
-
 import 'package:parking_app/models/geometry.dart';
 import 'package:parking_app/models/hive_parking_place.dart';
 import 'package:parking_app/models/location.dart';
@@ -105,19 +104,27 @@ class LocationCubit extends Cubit<LocationState> {
     resetMap();
     var location =
         Location(pressedLocation.latitude, pressedLocation.longitude);
-    ParkingPlace parking = ParkingPlace(location, Geometry(location),
-        'New parking location', 'Click to save parking', 0.0);
+    ParkingPlace parking = ParkingPlace(
+        location,
+        Geometry(location),
+        'New parking location',
+        'Click save parking to create own parking location. It will always be with you.',
+        1.0);
 
     Set<Marker> updatedMarkers = state.markers;
+    Marker markerToBeRemoved;
 
     updatedMarkers.forEach((marker) {
       if (marker.infoWindow.title == 'New parking location') {
-        updatedMarkers.remove(marker);
-        emit(state.copyWith(
-          markers: updatedMarkers,
-        ));
+        markerToBeRemoved = marker;
       }
     });
+    if (markerToBeRemoved != null) {
+      updatedMarkers.remove(markerToBeRemoved);
+      emit(state.copyWith(
+        markers: updatedMarkers,
+      ));
+    }
     updatedMarkers.add(parkingToMarker(parking));
 
     emit(state.copyWith(
@@ -130,13 +137,32 @@ class LocationCubit extends Cubit<LocationState> {
     List<ParkingPlace> _parkings = state.parkings;
     Set<Marker> _markers = state.markers;
     Marker oldMarker;
+    List<ParkingPlace> oldParkings = List<ParkingPlace>();
+
     _markers.forEach((marker) {
       if (marker.infoWindow.title == 'New parking location') {
         oldMarker = marker;
       }
     });
 
-    _markers.remove(oldMarker);
+    _parkings.forEach((p) {
+      if (p.geometry.location.lat == parking.geometry.location.lat &&
+          p.geometry.location.lng == parking.geometry.location.lng) {
+        oldParkings.add(p);
+      }
+    });
+
+    if (oldParkings != null) {
+      oldParkings.forEach((p) {
+        _parkings.remove(p);
+        _markers.remove(parkingToMarker(p));
+      });
+    }
+
+    if (oldMarker != null) {
+      _markers.remove(oldMarker);
+    }
+
     _markers.add(parkingToMarker(parking));
     _parkings.add(parking);
 
@@ -154,6 +180,17 @@ class LocationCubit extends Cubit<LocationState> {
   void saveParking(ParkingPlace parking) {
     HiveParkingPlace hiveParking = HiveParkingPlace.fromParkingPlace(parking);
     Hive.box('parkings').add(hiveParking);
+  }
+
+  bool parkingAlreadyExists(ParkingPlace parking) {
+    var parkings = state.parkings;
+    parkings.forEach((p) {
+      if (p.geometry.location.lat == parking.geometry.location.lat &&
+          p.geometry.location.lng == parking.geometry.location.lng) {
+        return true;
+      }
+    });
+    return false;
   }
 
   // SEARCHING TERM
@@ -178,21 +215,6 @@ class LocationCubit extends Cubit<LocationState> {
     if (newLocation != null) {
       emit(state.copyWith(
           updatedUserLocation: newLocation, isLocationUpdated: true));
-    }
-  }
-
-  void backToUserLocation() async {
-    Position userPosition;
-    Place userPlace;
-    try {
-      userPosition = await locationRepository.getActualPosition();
-      userPlace = Place(SearchResult('User Location'),
-          Geometry(Location(userPosition.latitude, userPosition.longitude)));
-    } catch (e) {}
-
-    if (userPosition != null) {
-      emit(state.copyWith(
-          updatedUserLocation: userPlace, isLocationUpdated: true));
     }
   }
 }

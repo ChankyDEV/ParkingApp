@@ -10,7 +10,7 @@ import 'package:parking_app/repositories/location/i_location.dart';
 import 'dart:convert' as convert;
 
 class LocationRepository implements ILocation {
-  String googleMapKey = "AIzaSyDBBd9PFQPd-VCfjpDU-zxEraXJpkTrH_Y";
+  String _googleMapKey = "AIzaSyDBBd9PFQPd-VCfjpDU-zxEraXJpkTrH_Y";
 
   @override
   Future<Position> getActualPosition() async {
@@ -45,11 +45,9 @@ class LocationRepository implements ILocation {
   @override
   Future<List<ParkingPlace>> getNearbyParkings(Location userLocation) async {
     var url =
-        "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${userLocation.lat},${userLocation.lng}&type=parking&rankby=distance&key=${googleMapKey}";
+        "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${userLocation.lat},${userLocation.lng}&type=parking&rankby=distance&key=${_googleMapKey}";
 
-    var response = await get(url);
-    var json = convert.jsonDecode(response.body);
-    var results = json['results'] as List;
+    var results = await makeRequest(url, 'results');
 
     var places = results
         .map(
@@ -89,11 +87,9 @@ class LocationRepository implements ILocation {
     String city = locationNameList[0];
 
     var url =
-        "https://maps.googleapis.com/maps/api/geocode/json?address=$city&key=AIzaSyDBBd9PFQPd-VCfjpDU-zxEraXJpkTrH_Y";
+        "https://maps.googleapis.com/maps/api/geocode/json?address=$city&key=$_googleMapKey";
 
-    var response = await get(url);
-    var json = convert.jsonDecode(response.body);
-    var results = json['results'] as List;
+    var results = await makeRequest(url, 'results');
 
     if (results != null) {
       var place = results.map((term) => Place.fromMap(term)).first;
@@ -107,17 +103,21 @@ class LocationRepository implements ILocation {
   Future<List<SearchResult>> getSearchedTerms(String query) async {
     if (query.length > 2) {
       var url =
-          "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&key=AIzaSyDBBd9PFQPd-VCfjpDU-zxEraXJpkTrH_Y&sessiontoken=1234567890";
+          "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&key=$_googleMapKey&sessiontoken=1234567890";
 
-      var response = await get(url);
-      var json = convert.jsonDecode(response.body);
-      var results = json['predictions'] as List;
-
+      var results = await makeRequest(url, 'predictions');
       var terms = results.map((term) => SearchResult.fromMap(term)).toList();
 
       return terms;
     }
 
     return null;
+  }
+
+  Future<List<dynamic>> makeRequest(String url, String title) async {
+    var response = await get(url);
+    var json = convert.jsonDecode(response.body);
+    var results = json[title] as List;
+    return results;
   }
 }
