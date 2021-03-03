@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:parking_app/models/geometry.dart';
 import 'package:parking_app/models/location.dart';
 import 'package:parking_app/models/parking_place.dart';
 import 'package:parking_app/repositories/location/i_location.dart';
@@ -56,23 +57,50 @@ class LocationCubit extends Cubit<LocationState> {
     Set<Marker> markers = HashSet<Marker>();
 
     places.forEach((parking) {
-      markers.add(
-        Marker(
-          markerId: MarkerId(parking.name),
-          draggable: false,
-          onTap: () {
-            emit(state.copyWith(chosenParking: parking));
-          },
-          position: LatLng(
-              parking.geometry.location.lat, parking.geometry.location.lng),
-          infoWindow: InfoWindow(title: parking.name),
-        ),
-      );
+      markers.add(parkingToMarker(parking));
     });
     return markers;
   }
 
+  Marker parkingToMarker(ParkingPlace parking) {
+    return Marker(
+      markerId: MarkerId(parking.name),
+      draggable: false,
+      onTap: () {
+        emit(state.copyWith(chosenParking: parking));
+      },
+      position:
+          LatLng(parking.geometry.location.lat, parking.geometry.location.lng),
+      infoWindow: InfoWindow(title: parking.name),
+    );
+  }
+
   void resetMap() {
     emit(state.copyWith(chosenParking: null));
+  }
+
+  void setNewChosenParking(LatLng pressedLocation) {
+    resetMap();
+    var location =
+        Location(pressedLocation.latitude, pressedLocation.longitude);
+    ParkingPlace parking = ParkingPlace(location, Geometry(location),
+        'New parking location', 'Click to save parking', 0.0);
+
+    Set<Marker> updatedMarkers = state.markers;
+
+    updatedMarkers.forEach((marker) {
+      if (marker.infoWindow.title == 'New parking location') {
+        updatedMarkers.remove(marker);
+        emit(state.copyWith(
+          markers: updatedMarkers,
+        ));
+      }
+    });
+    updatedMarkers.add(parkingToMarker(parking));
+
+    emit(state.copyWith(
+      chosenParking: parking,
+      markers: updatedMarkers,
+    ));
   }
 }

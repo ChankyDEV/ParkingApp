@@ -24,8 +24,12 @@ class HomeScreen extends StatelessWidget {
                   Expanded(
                     flex: 3,
                     child: GoogleMap(
-                      onTap: (argument) {
+                      onTap: (tapLocation) {
                         BlocProvider.of<LocationCubit>(context).resetMap();
+                      },
+                      onLongPress: (pressLocation) {
+                        BlocProvider.of<LocationCubit>(context)
+                            .setNewChosenParking(pressLocation);
                       },
                       markers: state.markers,
                       myLocationEnabled: true,
