@@ -7,7 +7,7 @@ abstract class LocationState with _$LocationState {
       Set<Marker> markers,
       List<ParkingPlace> parkings,
       ParkingPlace chosenParking,
-      bool isConfiguringAgain,
+      bool isLocationUpdated,
       String searchedTerm,
       List<SearchResult> searches,
       Place updatedUserLocation}) = _Initial;

@@ -24,16 +24,25 @@ class LocationCubit extends Cubit<LocationState> {
   Location userLocation;
 
   Future<void> configureUserLocationAndLoadParkings(
-      bool isConfiguredAgain) async {
+      bool locationUpdated) async {
     Position result;
-    try {
-      result = await locationRepository.getActualPosition();
-    } catch (e) {
-      print(e.toString());
+    bool isDataReady = false;
+
+    if (!locationUpdated) {
+      try {
+        result = await locationRepository.getActualPosition();
+      } catch (e) {
+        print(e.toString());
+      }
+      userLocation = Location(result.latitude, result.longitude);
+      isDataReady = true;
+    } else {
+      userLocation = Location(state.updatedUserLocation.geometry.location.lat,
+          state.updatedUserLocation.geometry.location.lng);
+      isDataReady = true;
     }
 
-    if (result != null) {
-      userLocation = Location(result.latitude, result.longitude);
+    if (isDataReady) {
       var parkings = await getNearbyParkings();
       try {
         parkings = await locationRepository.addSavedParkings(parkings);
@@ -42,13 +51,14 @@ class LocationCubit extends Cubit<LocationState> {
       }
 
       emit(state.copyWith(
-          position: Position(
-            latitude: result.latitude,
-            longitude: result.longitude,
-          ),
-          markers: convertParkingPlacesToMarkers(parkings),
-          parkings: parkings,
-          isConfiguringAgain: false));
+        position: Position(
+          latitude: userLocation.lat,
+          longitude: userLocation.lng,
+        ),
+        markers: convertParkingPlacesToMarkers(parkings),
+        parkings: parkings,
+        isLocationUpdated: false,
+      ));
     }
   }
 
@@ -77,7 +87,9 @@ class LocationCubit extends Cubit<LocationState> {
       markerId: MarkerId(parking.name),
       draggable: false,
       onTap: () {
-        emit(state.copyWith(chosenParking: parking, isConfiguringAgain: false));
+        emit(state.copyWith(
+          chosenParking: parking,
+        ));
       },
       position:
           LatLng(parking.geometry.location.lat, parking.geometry.location.lng),
@@ -136,7 +148,7 @@ class LocationCubit extends Cubit<LocationState> {
         markers: _markers,
         parkings: _parkings,
         chosenParking: null,
-        isConfiguringAgain: true));
+        isLocationUpdated: false));
   }
 
   void saveParking(ParkingPlace parking) {
@@ -164,7 +176,8 @@ class LocationCubit extends Cubit<LocationState> {
     } catch (e) {}
 
     if (newLocation != null) {
-      emit(state.copyWith(updatedUserLocation: newLocation));
+      emit(state.copyWith(
+          updatedUserLocation: newLocation, isLocationUpdated: true));
     }
   }
 }

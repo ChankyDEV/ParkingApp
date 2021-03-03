@@ -14,10 +14,9 @@ class HomeScreen extends StatelessWidget {
   Completer<GoogleMapController> _controller = Completer();
   var searchBarController = FloatingSearchBarController();
 
-  void updateLocation(Place place) async {
+  void updateLocation(Place place, BuildContext context) async {
     if (place != null) {
       var controller = await _controller.future;
-
       controller.animateCamera(CameraUpdate.newLatLng(
           LatLng(place.geometry.location.lat, place.geometry.location.lng)));
     }
@@ -32,7 +31,7 @@ class HomeScreen extends StatelessWidget {
         child: BlocBuilder<LocationCubit, LocationState>(
           builder: (context, state) {
             if (state.position != null && state.markers != null) {
-              updateLocation(state.updatedUserLocation);
+              updateLocation(state.updatedUserLocation, context);
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -42,18 +41,21 @@ class HomeScreen extends StatelessWidget {
                       fit: StackFit.expand,
                       children: [
                         GoogleMap(
+                          onCameraIdle: () {
+                            if (state.isLocationUpdated) {
+                              BlocProvider.of<LocationCubit>(context)
+                                  .configureUserLocationAndLoadParkings(true);
+                            }
+                          },
+                          onMapCreated: (controller) {
+                            _controller.complete(controller);
+                          },
                           onTap: (tapLocation) {
                             BlocProvider.of<LocationCubit>(context).resetMap();
                           },
                           onLongPress: (pressLocation) {
                             BlocProvider.of<LocationCubit>(context)
                                 .setNewChosenParking(pressLocation);
-                          },
-                          onMapCreated: (controller) {
-                            _controller.complete(controller);
-                            if (state.isConfiguringAgain) {
-                              cameraMove(state.parkings);
-                            }
                           },
                           markers: state.markers,
                           myLocationEnabled: true,
