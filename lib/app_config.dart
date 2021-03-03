@@ -12,8 +12,8 @@ class AppConfig extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-            create: (context) =>
-                LocationCubit(LocationRepository())..getLocation()),
+            create: (context) => LocationCubit(LocationRepository())
+              ..configureUserLocationAndLoadParkings()),
         BlocProvider(create: (context) => SaveParkingFormCubit()),
       ],
       child: MaterialApp(

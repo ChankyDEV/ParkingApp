@@ -48,4 +48,13 @@ class ParkingPlace {
       hiveParking.name,
       hiveParking.descripion,
       hiveParking.rating);
+
+  factory ParkingPlace.empty() => ParkingPlace(
+      Location(0.0, 0.0),
+      Geometry(
+        Location(0.0, 0.0),
+      ),
+      '',
+      '',
+      0.0);
 }

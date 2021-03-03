@@ -5,4 +5,5 @@ import 'package:parking_app/models/parking_place.dart';
 abstract class ILocation {
   Future<Position> getActualPosition();
   Future<List<ParkingPlace>> getNearbyParkings(Location userLocation);
+  Future<List<ParkingPlace>> addSavedParkings(List<ParkingPlace> parkings);
 }

@@ -1,6 +1,7 @@
 import 'package:geolocator/geolocator.dart';
-import 'package:geolocator_platform_interface/src/models/position.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart';
+import 'package:parking_app/models/hive_parking_place.dart';
 import 'package:parking_app/models/location.dart';
 import 'package:parking_app/models/parking_place.dart';
 import 'package:parking_app/repositories/location/i_location.dart';
@@ -14,9 +15,9 @@ class LocationRepository implements ILocation {
     LocationPermission permission;
 
     bool isGPSenabled = await Geolocator.isLocationServiceEnabled();
+    permission = await Geolocator.checkPermission();
 
     if (isGPSenabled) {
-      permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.deniedForever) {
         return Future.error(
             'Location permissions are permantly denied, we cannot request permissions.');
@@ -55,5 +56,22 @@ class LocationRepository implements ILocation {
         .toList();
 
     return places;
+  }
+
+  @override
+  Future<List<ParkingPlace>> addSavedParkings(
+      List<ParkingPlace> parkings) async {
+    var savedParkings = await Hive.openBox('parkings');
+    int amountOfSavedParkings = Hive.box('parkings').length;
+
+    if (amountOfSavedParkings > 0) {
+      for (int i = 0; i < amountOfSavedParkings; i++) {
+        var hiveParking = savedParkings.get(i) as HiveParkingPlace;
+        ParkingPlace parking = ParkingPlace.fromHive(hiveParking);
+        parkings.add(parking);
+      }
+    }
+
+    return parkings;
   }
 }
