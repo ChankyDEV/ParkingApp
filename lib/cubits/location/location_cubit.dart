@@ -180,4 +180,19 @@ class LocationCubit extends Cubit<LocationState> {
           updatedUserLocation: newLocation, isLocationUpdated: true));
     }
   }
+
+  void backToUserLocation() async {
+    Position userPosition;
+    Place userPlace;
+    try {
+      userPosition = await locationRepository.getActualPosition();
+      userPlace = Place(SearchResult('User Location'),
+          Geometry(Location(userPosition.latitude, userPosition.longitude)));
+    } catch (e) {}
+
+    if (userPosition != null) {
+      emit(state.copyWith(
+          updatedUserLocation: userPlace, isLocationUpdated: true));
+    }
+  }
 }

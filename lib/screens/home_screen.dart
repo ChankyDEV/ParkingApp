@@ -14,8 +14,9 @@ class HomeScreen extends StatelessWidget {
   Completer<GoogleMapController> _controller = Completer();
   var searchBarController = FloatingSearchBarController();
 
-  void updateLocation(Place place, BuildContext context) async {
-    if (place != null) {
+  void updateLocation(
+      Place place, BuildContext context, bool isLocationUpdated) async {
+    if (place != null && isLocationUpdated == true) {
       var controller = await _controller.future;
       controller.animateCamera(CameraUpdate.newLatLng(
           LatLng(place.geometry.location.lat, place.geometry.location.lng)));
@@ -31,7 +32,8 @@ class HomeScreen extends StatelessWidget {
         child: BlocBuilder<LocationCubit, LocationState>(
           builder: (context, state) {
             if (state.position != null && state.markers != null) {
-              updateLocation(state.updatedUserLocation, context);
+              updateLocation(
+                  state.updatedUserLocation, context, state.isLocationUpdated);
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -58,14 +60,23 @@ class HomeScreen extends StatelessWidget {
                                 .setNewChosenParking(pressLocation);
                           },
                           markers: state.markers,
-                          myLocationEnabled: true,
-                          myLocationButtonEnabled: true,
                           initialCameraPosition: CameraPosition(
                             bearing: 0.0,
                             target: LatLng(state.position.latitude,
                                 state.position.longitude),
                             tilt: 0.0,
                             zoom: 13,
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 17,
+                          left: 10,
+                          child: FloatingActionButton(
+                            onPressed: () {
+                              BlocProvider.of<LocationCubit>(context)
+                                  .backToUserLocation();
+                            },
+                            child: Icon(Icons.home),
                           ),
                         ),
                         FloatingSearchBar(
