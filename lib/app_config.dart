@@ -13,7 +13,7 @@ class AppConfig extends StatelessWidget {
       providers: [
         BlocProvider(
             create: (context) => LocationCubit(LocationRepository())
-              ..configureUserLocationAndLoadParkings()),
+              ..configureUserLocationAndLoadParkings(false)),
         BlocProvider(create: (context) => SaveParkingFormCubit()),
       ],
       child: MaterialApp(

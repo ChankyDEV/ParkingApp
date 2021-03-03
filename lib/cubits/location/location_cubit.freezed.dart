@@ -18,12 +18,14 @@ class _$LocationStateTearOff {
       {Position position,
       Set<Marker> markers,
       List<ParkingPlace> parkings,
-      ParkingPlace chosenParking}) {
+      ParkingPlace chosenParking,
+      bool isConfiguringAgain}) {
     return _Initial(
       position: position,
       markers: markers,
       parkings: parkings,
       chosenParking: chosenParking,
+      isConfiguringAgain: isConfiguringAgain,
     );
   }
 }
@@ -38,17 +40,26 @@ mixin _$LocationState {
   Set<Marker> get markers;
   List<ParkingPlace> get parkings;
   ParkingPlace get chosenParking;
+  bool get isConfiguringAgain;
 
   @optionalTypeArgs
   TResult when<TResult extends Object>({
     @required
-        TResult initial(Position position, Set<Marker> markers,
-            List<ParkingPlace> parkings, ParkingPlace chosenParking),
+        TResult initial(
+            Position position,
+            Set<Marker> markers,
+            List<ParkingPlace> parkings,
+            ParkingPlace chosenParking,
+            bool isConfiguringAgain),
   });
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object>({
-    TResult initial(Position position, Set<Marker> markers,
-        List<ParkingPlace> parkings, ParkingPlace chosenParking),
+    TResult initial(
+        Position position,
+        Set<Marker> markers,
+        List<ParkingPlace> parkings,
+        ParkingPlace chosenParking,
+        bool isConfiguringAgain),
     @required TResult orElse(),
   });
   @optionalTypeArgs
@@ -74,7 +85,8 @@ abstract class $LocationStateCopyWith<$Res> {
       {Position position,
       Set<Marker> markers,
       List<ParkingPlace> parkings,
-      ParkingPlace chosenParking});
+      ParkingPlace chosenParking,
+      bool isConfiguringAgain});
 }
 
 /// @nodoc
@@ -92,6 +104,7 @@ class _$LocationStateCopyWithImpl<$Res>
     Object markers = freezed,
     Object parkings = freezed,
     Object chosenParking = freezed,
+    Object isConfiguringAgain = freezed,
   }) {
     return _then(_value.copyWith(
       position: position == freezed ? _value.position : position as Position,
@@ -102,6 +115,9 @@ class _$LocationStateCopyWithImpl<$Res>
       chosenParking: chosenParking == freezed
           ? _value.chosenParking
           : chosenParking as ParkingPlace,
+      isConfiguringAgain: isConfiguringAgain == freezed
+          ? _value.isConfiguringAgain
+          : isConfiguringAgain as bool,
     ));
   }
 }
@@ -115,7 +131,8 @@ abstract class _$InitialCopyWith<$Res> implements $LocationStateCopyWith<$Res> {
       {Position position,
       Set<Marker> markers,
       List<ParkingPlace> parkings,
-      ParkingPlace chosenParking});
+      ParkingPlace chosenParking,
+      bool isConfiguringAgain});
 }
 
 /// @nodoc
@@ -133,6 +150,7 @@ class __$InitialCopyWithImpl<$Res> extends _$LocationStateCopyWithImpl<$Res>
     Object markers = freezed,
     Object parkings = freezed,
     Object chosenParking = freezed,
+    Object isConfiguringAgain = freezed,
   }) {
     return _then(_Initial(
       position: position == freezed ? _value.position : position as Position,
@@ -143,6 +161,9 @@ class __$InitialCopyWithImpl<$Res> extends _$LocationStateCopyWithImpl<$Res>
       chosenParking: chosenParking == freezed
           ? _value.chosenParking
           : chosenParking as ParkingPlace,
+      isConfiguringAgain: isConfiguringAgain == freezed
+          ? _value.isConfiguringAgain
+          : isConfiguringAgain as bool,
     ));
   }
 }
@@ -150,7 +171,11 @@ class __$InitialCopyWithImpl<$Res> extends _$LocationStateCopyWithImpl<$Res>
 /// @nodoc
 class _$_Initial implements _Initial {
   const _$_Initial(
-      {this.position, this.markers, this.parkings, this.chosenParking});
+      {this.position,
+      this.markers,
+      this.parkings,
+      this.chosenParking,
+      this.isConfiguringAgain});
 
   @override
   final Position position;
@@ -160,10 +185,12 @@ class _$_Initial implements _Initial {
   final List<ParkingPlace> parkings;
   @override
   final ParkingPlace chosenParking;
+  @override
+  final bool isConfiguringAgain;
 
   @override
   String toString() {
-    return 'LocationState.initial(position: $position, markers: $markers, parkings: $parkings, chosenParking: $chosenParking)';
+    return 'LocationState.initial(position: $position, markers: $markers, parkings: $parkings, chosenParking: $chosenParking, isConfiguringAgain: $isConfiguringAgain)';
   }
 
   @override
@@ -181,7 +208,10 @@ class _$_Initial implements _Initial {
                     .equals(other.parkings, parkings)) &&
             (identical(other.chosenParking, chosenParking) ||
                 const DeepCollectionEquality()
-                    .equals(other.chosenParking, chosenParking)));
+                    .equals(other.chosenParking, chosenParking)) &&
+            (identical(other.isConfiguringAgain, isConfiguringAgain) ||
+                const DeepCollectionEquality()
+                    .equals(other.isConfiguringAgain, isConfiguringAgain)));
   }
 
   @override
@@ -190,7 +220,8 @@ class _$_Initial implements _Initial {
       const DeepCollectionEquality().hash(position) ^
       const DeepCollectionEquality().hash(markers) ^
       const DeepCollectionEquality().hash(parkings) ^
-      const DeepCollectionEquality().hash(chosenParking);
+      const DeepCollectionEquality().hash(chosenParking) ^
+      const DeepCollectionEquality().hash(isConfiguringAgain);
 
   @JsonKey(ignore: true)
   @override
@@ -201,23 +232,33 @@ class _$_Initial implements _Initial {
   @optionalTypeArgs
   TResult when<TResult extends Object>({
     @required
-        TResult initial(Position position, Set<Marker> markers,
-            List<ParkingPlace> parkings, ParkingPlace chosenParking),
+        TResult initial(
+            Position position,
+            Set<Marker> markers,
+            List<ParkingPlace> parkings,
+            ParkingPlace chosenParking,
+            bool isConfiguringAgain),
   }) {
     assert(initial != null);
-    return initial(position, markers, parkings, chosenParking);
+    return initial(
+        position, markers, parkings, chosenParking, isConfiguringAgain);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object>({
-    TResult initial(Position position, Set<Marker> markers,
-        List<ParkingPlace> parkings, ParkingPlace chosenParking),
+    TResult initial(
+        Position position,
+        Set<Marker> markers,
+        List<ParkingPlace> parkings,
+        ParkingPlace chosenParking,
+        bool isConfiguringAgain),
     @required TResult orElse(),
   }) {
     assert(orElse != null);
     if (initial != null) {
-      return initial(position, markers, parkings, chosenParking);
+      return initial(
+          position, markers, parkings, chosenParking, isConfiguringAgain);
     }
     return orElse();
   }
@@ -250,7 +291,8 @@ abstract class _Initial implements LocationState {
       {Position position,
       Set<Marker> markers,
       List<ParkingPlace> parkings,
-      ParkingPlace chosenParking}) = _$_Initial;
+      ParkingPlace chosenParking,
+      bool isConfiguringAgain}) = _$_Initial;
 
   @override
   Position get position;
@@ -260,6 +302,8 @@ abstract class _Initial implements LocationState {
   List<ParkingPlace> get parkings;
   @override
   ParkingPlace get chosenParking;
+  @override
+  bool get isConfiguringAgain;
   @override
   @JsonKey(ignore: true)
   _$InitialCopyWith<_Initial> get copyWith;

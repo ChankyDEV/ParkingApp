@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parking_app/cubits/location/location_cubit.dart';
 import 'package:parking_app/models/parking_place.dart';
 import 'package:parking_app/screens/core/custom_rating_bar.dart';
 
@@ -63,9 +65,14 @@ class ChosenParkingCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FlatButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/addParkingPlace',
+                    onPressed: () async {
+                      dynamic result = await Navigator.pushNamed(
+                          context, '/addParkingPlace',
                           arguments: {'parking': parking});
+
+                      ParkingPlace newParking = result['parking'];
+                      BlocProvider.of<LocationCubit>(context)
+                          .updatePinsWithNewParking(newParking);
                     },
                     child: Text('Save Parking')),
               ],

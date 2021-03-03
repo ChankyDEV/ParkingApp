@@ -6,5 +6,6 @@ abstract class LocationState with _$LocationState {
       {Position position,
       Set<Marker> markers,
       List<ParkingPlace> parkings,
-      ParkingPlace chosenParking}) = _Initial;
+      ParkingPlace chosenParking,
+      bool isConfiguringAgain}) = _Initial;
 }

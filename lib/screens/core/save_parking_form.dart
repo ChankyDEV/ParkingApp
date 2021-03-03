@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:parking_app/cubits/location/location_cubit.dart';
 import 'package:parking_app/cubits/save_parking/save_parking_form_cubit.dart';
 import 'package:parking_app/models/parking_place.dart';
 
@@ -139,13 +140,10 @@ class SaveParkingForm extends StatelessWidget {
                                 state.name,
                                 state.description,
                                 state.rating);
-                            print(newParking.description);
-                            print(newParking.name);
-                            print(newParking.geometry.location.lat);
-                            print(newParking.geometry.location.lng);
-                            print(newParking.rating);
+
                             BlocProvider.of<SaveParkingFormCubit>(context)
                                 .saveParking(newParking);
+                            Navigator.pop(context, {'parking': newParking});
                           }
                         },
                         child: Text('Save')),

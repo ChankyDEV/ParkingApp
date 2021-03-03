@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:parking_app/cubits/location/location_cubit.dart';
 import 'package:parking_app/models/parking_place.dart';
 import 'package:parking_app/screens/core/chosen_parking_card.dart';
 import 'package:parking_app/screens/core/loading_screen.dart';
+import 'dart:async';
 
 @immutable
 class HomeScreen extends StatelessWidget {
+  Completer<GoogleMapController> _controller = Completer();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,6 +31,12 @@ class HomeScreen extends StatelessWidget {
                       onLongPress: (pressLocation) {
                         BlocProvider.of<LocationCubit>(context)
                             .setNewChosenParking(pressLocation);
+                      },
+                      onMapCreated: (controller) {
+                        _controller.complete(controller);
+                        if (state.isConfiguringAgain) {
+                          cameraMove(state.parkings);
+                        }
                       },
                       markers: state.markers,
                       myLocationEnabled: true,
@@ -62,5 +69,12 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void cameraMove(List<ParkingPlace> parkings) async {
+    var controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newLatLng(LatLng(
+        parkings.last.geometry.location.lat,
+        parkings.last.geometry.location.lng)));
   }
 }

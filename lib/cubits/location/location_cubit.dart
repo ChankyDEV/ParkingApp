@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import 'package:parking_app/models/geometry.dart';
 import 'package:parking_app/models/location.dart';
 import 'package:parking_app/models/parking_place.dart';
@@ -17,7 +18,33 @@ class LocationCubit extends Cubit<LocationState> {
   final ILocation locationRepository;
   Location userLocation;
 
-  Future<void> configureUserLocationAndLoadParkings() async {
+  Future<void> updatePinsWithNewParking(ParkingPlace parking) async {
+    List<ParkingPlace> _parkings = state.parkings;
+    Set<Marker> _markers = state.markers;
+    Marker oldMarker;
+    _markers.forEach((marker) {
+      if (marker.infoWindow.title == 'New parking location') {
+        oldMarker = marker;
+      }
+    });
+
+    _markers.remove(oldMarker);
+    _markers.add(parkingToMarker(parking));
+    _parkings.add(parking);
+
+    emit(state.copyWith(
+        position: Position(
+          latitude: parking.geometry.location.lat,
+          longitude: parking.geometry.location.lng,
+        ),
+        markers: _markers,
+        parkings: _parkings,
+        chosenParking: null,
+        isConfiguringAgain: true));
+  }
+
+  Future<void> configureUserLocationAndLoadParkings(
+      bool isConfiguredAgain) async {
     Position result;
     try {
       result = await locationRepository.getActualPosition();
@@ -39,7 +66,8 @@ class LocationCubit extends Cubit<LocationState> {
           longitude: result.longitude,
         ),
         markers: convertParkingPlacesToMarkers(parkings),
-        parkings: parkings));
+        parkings: parkings,
+        isConfiguringAgain: false));
   }
 
   Future<List<ParkingPlace>> getNearbyParkings() async {
@@ -67,7 +95,7 @@ class LocationCubit extends Cubit<LocationState> {
       markerId: MarkerId(parking.name),
       draggable: false,
       onTap: () {
-        emit(state.copyWith(chosenParking: parking));
+        emit(state.copyWith(chosenParking: parking, isConfiguringAgain: false));
       },
       position:
           LatLng(parking.geometry.location.lat, parking.geometry.location.lng),
@@ -79,7 +107,7 @@ class LocationCubit extends Cubit<LocationState> {
     emit(state.copyWith(chosenParking: null));
   }
 
-  void setNewChosenParking(LatLng pressedLocation) {
+  void setNewChosenParking(LatLng pressedLocation) async {
     resetMap();
     var location =
         Location(pressedLocation.latitude, pressedLocation.longitude);

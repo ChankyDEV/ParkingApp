@@ -61,7 +61,12 @@ class LocationRepository implements ILocation {
   @override
   Future<List<ParkingPlace>> addSavedParkings(
       List<ParkingPlace> parkings) async {
-    var savedParkings = await Hive.openBox('parkings');
+    var savedParkings;
+
+    if (Hive.isBoxOpen('parkings') == false) {
+      savedParkings = await Hive.openBox('parkings');
+    }
+    savedParkings = Hive.box('parkings');
     int amountOfSavedParkings = Hive.box('parkings').length;
 
     if (amountOfSavedParkings > 0) {
