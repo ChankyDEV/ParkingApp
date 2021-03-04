@@ -42,6 +42,7 @@ class HomeScreen extends StatelessWidget {
                       fit: StackFit.expand,
                       children: [
                         GoogleMap(
+                          myLocationButtonEnabled: false,
                           myLocationEnabled: true,
                           onCameraIdle: () {
                             if (state.isLocationUpdated) {
@@ -77,7 +78,7 @@ class HomeScreen extends StatelessWidget {
                                 const Duration(milliseconds: 200),
                             transitionCurve: Curves.easeInOut,
                             physics: const BouncingScrollPhysics(),
-                            axisAlignment: -0.8,
+                            axisAlignment: 0.0,
                             openAxisAlignment: 0.0,
                             openMaxWidth: MediaQuery.of(context).size.width,
                             maxWidth: MediaQuery.of(context).size.width / 1.3,

@@ -33,8 +33,10 @@ class LocationCubit extends Cubit<LocationState> {
       } catch (e) {
         print(e.toString());
       }
-      userLocation = Location(result.latitude, result.longitude);
-      isDataReady = true;
+      if (result != null) {
+        userLocation = Location(result.latitude, result.longitude);
+        isDataReady = true;
+      }
     } else {
       userLocation = Location(state.updatedUserLocation.geometry.location.lat,
           state.updatedUserLocation.geometry.location.lng);
